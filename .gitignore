@@ -1,3 +1,6 @@
-*. log
-.DS Store
-Thumbs.db /build /dist node modules/
+*.log
+.DS_Store
+Thumbs.db
+/build
+/dist
+node_modules/
