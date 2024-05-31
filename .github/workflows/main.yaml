@@ -42,8 +42,5 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./src/server/gradlew
 
-    - name: Check folder
-      run: ls -lah ./src/server && pwd
-
     - name: Build with Gradle
-      run: ls -lah && pwd && ./src/server/gradlew clean build
+      run: cd ./src/server && ./gradlew clean build
