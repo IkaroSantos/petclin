@@ -1,0 +1,46 @@
+name: Petclin CI
+run-name: "${{ github.workflow }}: ${{ github.ref_name }}"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened # pull request is created
+      - synchronize # commit(s) pushed to the pull request
+      - reopened # closed pull request is reopened
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java-version: [17]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./src/server/gradlew
+
+    - name: Build with Gradle
+      run: cd ./src/server && ./gradlew clean build
