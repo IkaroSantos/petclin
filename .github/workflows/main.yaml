@@ -1,10 +1,15 @@
 name: Petclin CI
+run-name: "${{ github.workflow }}: ${{ github.ref_name }}"
 
 on:
   push:
     branches:
       - main
   pull_request:
+    types:
+      - opened # pull request is created
+      - synchronize # commit(s) pushed to the pull request
+      - reopened # closed pull request is reopened
     branches:
       - main
 
@@ -37,5 +42,8 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x src/server/gradlew
 
+    - name: Check folder
+      run: ls -lah && pwd
+
     - name: Build with Gradle
-      run: src/server/gradlew build
+      run: src/server/gradlew clean build
