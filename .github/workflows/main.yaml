@@ -44,29 +44,3 @@ jobs:
 
     - name: Build with Gradle
       run: cd ./src/server && ./gradlew clean build
-
-  pr-mergable:
-    if: always() && github.event_name == 'pull_request'
-    runs-on:
-      - self-hosted
-      - ephemeral-v4
-      - c6i.2xlarge
-    needs:
-      - build
-    steps:
-      - name: PR mergable check status of all jobs
-        env:
-          NEEDS: ${{ toJSON(needs) }}
-        run: |
-          echo "$NEEDS"
-          results="${{ join(needs.*.result, ',') }}"
-          echo "${results}"
-          array=(${results//,/ })
-          for i in "${array[@]}"
-          do
-              if [[ "$i" == failure || "$i" == cancelled ]]; then
-                echo "Some required test failed. Check the following json to identify:"
-                echo "$NEEDS"
-                exit 1
-              fi
-          done
